@@ -37,6 +37,7 @@
 #include "LLConverter.h"
 #include "LaunchMgr.h"
 #include "CRC32.h"
+#include "Comm433MHz.h"
 
 uint32_t g_ui32SysClock;
 
@@ -54,6 +55,7 @@ EtherDriver etherDrv;
 HopeRF	hopeRF;
 LaunchMgr launch;
 CRC32 crc;
+Comm433MHz comm433MHz;
 
 // Global Data
 int MainLoopCounter;
@@ -62,7 +64,7 @@ float PerfCpuTimeMS;
 float PerfCpuTimeMSMAX;
 
 // Systick
-#define SysTickFrequency 400
+#define SysTickFrequency 1000
 volatile bool SysTickIntHit = false;
 
 void main(void)
@@ -81,6 +83,7 @@ void main(void)
 	timerLoop.Init();
 	crc.Init();
 	wpnOut.Init();
+	serialU5.Init(UART5_BASE, 115200);
 
 	// Systick
 	SysTickPeriodSet(g_ui32SysClock/SysTickFrequency);
@@ -100,9 +103,6 @@ void main(void)
 		/////////////////////////////////
 		// ADC + Current Calc
 		adcDrv.Update();
-		//BatteryCurrentA = adcDrv.BATTCurrent();
-		//BatteryTotalCharge_mAh += (1000.0/3600.0 * (double)BatteryCurrentA / SysTickFrequency );
-
 
 
 		/////////////////////////////////
@@ -110,6 +110,15 @@ void main(void)
 		/////////////////////////////////
 		// Launch Process
 		launch.Update();
+
+		// Send Data
+		BYTE buff[10] = "Nesto";
+		BYTE outputBuff[255];
+		int dataToSend = comm433MHz.GenerateTXPacket(20, buff, 5, outputBuff);
+		if( (MainLoopCounter%1000) == 0)
+		{
+		    serialU5.Write(outputBuff, dataToSend);
+		}
 
 		// DBG LED
 		dbgLed.Set(true);
