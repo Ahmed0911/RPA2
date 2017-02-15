@@ -35,7 +35,7 @@
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.panelGraph = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBoxTime = new System.Windows.Forms.TextBox();
+            this.textBoxADCValue = new System.Windows.Forms.TextBox();
             this.timerTicker = new System.Windows.Forms.Timer(this.components);
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxTicks = new System.Windows.Forms.TextBox();
@@ -45,6 +45,16 @@
             this.textBoxCommHeaderErrors = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxCommMsgOK = new System.Windows.Forms.TextBox();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.buttonWpnFire2 = new System.Windows.Forms.Button();
+            this.textBoxWpnStatus2 = new System.Windows.Forms.TextBox();
+            this.label70 = new System.Windows.Forms.Label();
+            this.buttonWpnArm2 = new System.Windows.Forms.Button();
+            this.buttonWpnFire1 = new System.Windows.Forms.Button();
+            this.textBoxWpnStatus1 = new System.Windows.Forms.TextBox();
+            this.label69 = new System.Windows.Forms.Label();
+            this.buttonWpnArm1 = new System.Windows.Forms.Button();
+            this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBoxPorts
@@ -95,22 +105,22 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1539, 90);
+            this.label5.Location = new System.Drawing.Point(1542, 130);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(47, 20);
             this.label5.TabIndex = 8;
-            this.label5.Text = "Time:";
+            this.label5.Text = "ADC:";
             // 
-            // textBoxTime
+            // textBoxADCValue
             // 
-            this.textBoxTime.Location = new System.Drawing.Point(1613, 85);
-            this.textBoxTime.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxTime.Name = "textBoxTime";
-            this.textBoxTime.ReadOnly = true;
-            this.textBoxTime.Size = new System.Drawing.Size(84, 26);
-            this.textBoxTime.TabIndex = 5;
-            this.textBoxTime.Text = "0";
+            this.textBoxADCValue.Location = new System.Drawing.Point(1614, 127);
+            this.textBoxADCValue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxADCValue.Name = "textBoxADCValue";
+            this.textBoxADCValue.ReadOnly = true;
+            this.textBoxADCValue.Size = new System.Drawing.Size(84, 26);
+            this.textBoxADCValue.TabIndex = 5;
+            this.textBoxADCValue.Text = "0";
             // 
             // timerTicker
             // 
@@ -119,7 +129,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(1534, 134);
+            this.label6.Location = new System.Drawing.Point(1542, 94);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(49, 20);
@@ -128,7 +138,7 @@
             // 
             // textBoxTicks
             // 
-            this.textBoxTicks.Location = new System.Drawing.Point(1613, 130);
+            this.textBoxTicks.Location = new System.Drawing.Point(1614, 91);
             this.textBoxTicks.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxTicks.Name = "textBoxTicks";
             this.textBoxTicks.ReadOnly = true;
@@ -196,11 +206,101 @@
             this.textBoxCommMsgOK.TabIndex = 13;
             this.textBoxCommMsgOK.Text = "0";
             // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.buttonWpnFire2);
+            this.groupBox10.Controls.Add(this.textBoxWpnStatus2);
+            this.groupBox10.Controls.Add(this.label70);
+            this.groupBox10.Controls.Add(this.buttonWpnArm2);
+            this.groupBox10.Controls.Add(this.buttonWpnFire1);
+            this.groupBox10.Controls.Add(this.textBoxWpnStatus1);
+            this.groupBox10.Controls.Add(this.label69);
+            this.groupBox10.Controls.Add(this.buttonWpnArm1);
+            this.groupBox10.Location = new System.Drawing.Point(1526, 354);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(382, 176);
+            this.groupBox10.TabIndex = 41;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Launch";
+            // 
+            // buttonWpnFire2
+            // 
+            this.buttonWpnFire2.Location = new System.Drawing.Point(278, 100);
+            this.buttonWpnFire2.Name = "buttonWpnFire2";
+            this.buttonWpnFire2.Size = new System.Drawing.Size(88, 56);
+            this.buttonWpnFire2.TabIndex = 45;
+            this.buttonWpnFire2.Text = "Fire";
+            this.buttonWpnFire2.UseVisualStyleBackColor = true;
+            this.buttonWpnFire2.Click += new System.EventHandler(this.buttonWpnCommand_Click);
+            // 
+            // textBoxWpnStatus2
+            // 
+            this.textBoxWpnStatus2.Location = new System.Drawing.Point(68, 116);
+            this.textBoxWpnStatus2.Name = "textBoxWpnStatus2";
+            this.textBoxWpnStatus2.Size = new System.Drawing.Size(128, 26);
+            this.textBoxWpnStatus2.TabIndex = 44;
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Location = new System.Drawing.Point(8, 118);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(55, 20);
+            this.label70.TabIndex = 43;
+            this.label70.Text = "Wpn2:";
+            // 
+            // buttonWpnArm2
+            // 
+            this.buttonWpnArm2.Location = new System.Drawing.Point(202, 100);
+            this.buttonWpnArm2.Name = "buttonWpnArm2";
+            this.buttonWpnArm2.Size = new System.Drawing.Size(70, 56);
+            this.buttonWpnArm2.TabIndex = 42;
+            this.buttonWpnArm2.Text = "Arm";
+            this.buttonWpnArm2.UseVisualStyleBackColor = true;
+            this.buttonWpnArm2.Click += new System.EventHandler(this.buttonWpnCommand_Click);
+            // 
+            // buttonWpnFire1
+            // 
+            this.buttonWpnFire1.Location = new System.Drawing.Point(278, 28);
+            this.buttonWpnFire1.Name = "buttonWpnFire1";
+            this.buttonWpnFire1.Size = new System.Drawing.Size(88, 56);
+            this.buttonWpnFire1.TabIndex = 41;
+            this.buttonWpnFire1.Text = "Fire";
+            this.buttonWpnFire1.UseVisualStyleBackColor = true;
+            this.buttonWpnFire1.Click += new System.EventHandler(this.buttonWpnCommand_Click);
+            // 
+            // textBoxWpnStatus1
+            // 
+            this.textBoxWpnStatus1.Location = new System.Drawing.Point(68, 44);
+            this.textBoxWpnStatus1.Name = "textBoxWpnStatus1";
+            this.textBoxWpnStatus1.Size = new System.Drawing.Size(128, 26);
+            this.textBoxWpnStatus1.TabIndex = 2;
+            // 
+            // label69
+            // 
+            this.label69.AutoSize = true;
+            this.label69.Location = new System.Drawing.Point(8, 46);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(55, 20);
+            this.label69.TabIndex = 1;
+            this.label69.Text = "Wpn1:";
+            // 
+            // buttonWpnArm1
+            // 
+            this.buttonWpnArm1.Location = new System.Drawing.Point(202, 28);
+            this.buttonWpnArm1.Name = "buttonWpnArm1";
+            this.buttonWpnArm1.Size = new System.Drawing.Size(70, 56);
+            this.buttonWpnArm1.TabIndex = 0;
+            this.buttonWpnArm1.Text = "Arm";
+            this.buttonWpnArm1.UseVisualStyleBackColor = true;
+            this.buttonWpnArm1.Click += new System.EventHandler(this.buttonWpnCommand_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1773, 1031);
+            this.ClientSize = new System.Drawing.Size(1920, 1031);
+            this.Controls.Add(this.groupBox10);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBoxCommMsgOK);
             this.Controls.Add(this.label3);
@@ -210,7 +310,7 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textBoxTicks);
-            this.Controls.Add(this.textBoxTime);
+            this.Controls.Add(this.textBoxADCValue);
             this.Controls.Add(this.panelGraph);
             this.Controls.Add(this.buttonOpen);
             this.Controls.Add(this.label1);
@@ -218,6 +318,8 @@
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MainForm";
             this.Text = "Load Cell V2 App";
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -230,7 +332,7 @@
         private System.Windows.Forms.Button buttonOpen;
         private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBoxTime;
+        private System.Windows.Forms.TextBox textBoxADCValue;
         private System.Windows.Forms.Timer timerTicker;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBoxTicks;
@@ -241,6 +343,15 @@
         private System.Windows.Forms.TextBox textBoxCommHeaderErrors;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBoxCommMsgOK;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.Button buttonWpnFire2;
+        private System.Windows.Forms.TextBox textBoxWpnStatus2;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.Button buttonWpnArm2;
+        private System.Windows.Forms.Button buttonWpnFire1;
+        private System.Windows.Forms.TextBox textBoxWpnStatus1;
+        private System.Windows.Forms.Label label69;
+        private System.Windows.Forms.Button buttonWpnArm1;
     }
 }
 

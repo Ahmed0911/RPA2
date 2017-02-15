@@ -10,6 +10,8 @@
 
 extern class CRC32 crc;
 
+extern void ProcessCommand(int cmd, unsigned char* data, int dataSize);
+
 Comm433MHz::Comm433MHz()
 {
     MsgReceivedOK = 0;
@@ -133,7 +135,7 @@ void Comm433MHz::NewRXPacket(BYTE* data, int dataLen)
 
 void Comm433MHz::ProcessMessage(BYTE type, BYTE* data, BYTE len)
 {
-
+    ProcessCommand(type, data, len);
 }
 
 int Comm433MHz::GenerateTXPacket(BYTE Type, BYTE* Data, BYTE Len, BYTE* OutputPacket)

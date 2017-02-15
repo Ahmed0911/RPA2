@@ -63,6 +63,8 @@ float PerfLoopTimeMS;
 float PerfCpuTimeMS;
 float PerfCpuTimeMSMAX;
 
+unsigned int ADCValue = 0;
+
 // Systick
 #define SysTickFrequency 1000
 volatile bool SysTickIntHit = false;
@@ -82,7 +84,9 @@ void main(void)
 	dbgLed.Init();
 	timerLoop.Init();
 	crc.Init();
+	adcDrv.Init();
 	wpnOut.Init();
+	launch.Init();
 	serialU5.Init(UART5_BASE, 115200);
 
 	// Systick
@@ -103,7 +107,12 @@ void main(void)
 		/////////////////////////////////
 		// ADC + Current Calc
 		adcDrv.Update();
+		ADCValue = adcDrv.GetValue(ADCBATTCURRENT);
 
+		// read serial data
+		BYTE inputBuff[255];
+		int dataReceived = serialU5.Read(inputBuff, 255);
+		comm433MHz.NewRXPacket(inputBuff, dataReceived);
 
 		/////////////////////////////////
 		// OUTPUTS
@@ -111,17 +120,10 @@ void main(void)
 		// Launch Process
 		launch.Update();
 
-		// Send Data
-		BYTE buff[10] = "Nesto";
-		BYTE outputBuff[255];
-		int dataToSend = comm433MHz.GenerateTXPacket(20, buff, 5, outputBuff);
-		if( (MainLoopCounter%1000) == 0)
-		{
-		    serialU5.Write(outputBuff, dataToSend);
-		}
-
 		// DBG LED
 		dbgLed.Set(true);
+
+
 
 		// Get CPU Time
 		PerfCpuTimeMS = timerLoop.GetUS()/1000.0f;
@@ -138,9 +140,33 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
 {
     switch( cmd )
     {
-        case 0x30: // AssistNow
+        case 0x10: // PING
         {
+            // Send Data
+            SCommEthData dataToSend;
+            dataToSend.LoopCounter = MainLoopCounter;
+            dataToSend.ADCValue = ADCValue;
+            dataToSend.LaunchStatus1 = launch.WpnState[0];
+            dataToSend.LaunchStatus2 = launch.WpnState[1];
 
+            BYTE outputBuff[255];
+            int bytesToSend = comm433MHz.GenerateTXPacket(0x20, (BYTE*)&dataToSend, sizeof(dataToSend), outputBuff);
+            serialU5.Write(outputBuff, bytesToSend);
+
+            break;
+        }
+
+        case 0x30: // Launch codes
+        {
+            // fill data
+            SCommLaunch launchCmd;
+            memcpy(&launchCmd, data, dataSize);
+
+            if( launchCmd.Command == 1) launch.Arm(launchCmd.Index, launchCmd.CodeTimer);
+            else if( launchCmd.Command == 2  ) launch.Fire(launchCmd.Index, launchCmd.CodeTimer);
+            else if( launchCmd.Command == 3  ) launch.Dearm(launchCmd.Index, launchCmd.CodeTimer);
+
+            break;
         }
     }
 }

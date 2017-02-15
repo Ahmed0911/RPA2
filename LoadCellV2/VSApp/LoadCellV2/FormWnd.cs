@@ -14,9 +14,14 @@ namespace LoadCellV2
 {
     public partial class MainForm : Form
     {
-        private int TickCount = 0;
         private Comm433MHz comm433 = new Comm433MHz();
 
+        bool SendPingCommands = false;
+
+        // Data
+        SCommEthData MainSystemData;
+
+        // Nesto...
         struct SData
         {
             public float Time;
@@ -48,8 +53,8 @@ namespace LoadCellV2
                 serialPort1.Open();
 
                 buttonOpen.Enabled = false;
-
                 timerTicker.Enabled = true;
+                SendPingCommands = true;
             }
             catch(Exception ex)
             {
@@ -59,15 +64,14 @@ namespace LoadCellV2
 
         private void timerTicker_Tick(object sender, EventArgs e)
         {
-            // 1. get data from serial
+            // 1. Get data from serial
             int dataLen = serialPort1.BytesToRead;
             byte[] buffer = new byte[dataLen];
             serialPort1.Read(buffer, 0, dataLen);
 
             // 2. Process Command
-            comm433.NewRXPacket(buffer, dataLen);
+            comm433.NewRXPacket(buffer, dataLen, ProcessMessage);
 
-            textBoxTicks.Text = string.Format("{0}", TickCount);
 
             // 4. Add Data To buffer and redraw
             //SData dat = new SData();
@@ -78,18 +82,39 @@ namespace LoadCellV2
             //dataList.Add(dat);            
             //panelGraph.Refresh();
 
-            // update data
+            // update data            
             textBoxCommMsgOK.Text = comm433.MsgReceivedOK.ToString();
             textBoxCommCRCErrors.Text = comm433.CrcErrors.ToString();
             textBoxCommHeaderErrors.Text = comm433.HeaderFails.ToString();
 
-            // TEST
-            //byte[] buff = new byte[] { 1, 2, 3, 4, 5 };
-            //byte[] outputPacket = new byte[100];
-            //int size = comm433.GenerateTXPacket(10, buff, 5, outputPacket);
-            //comm433.NewRXPacket(outputPacket, size);
+            // Loop/ADC
+            textBoxTicks.Text = MainSystemData.LoopCounter.ToString();
+            textBoxADCValue.Text = MainSystemData.ADCValue.ToString();
+
+            // Launch
+            string[] launchStatus = { "Idle", "Armed", "Firing" };
+            textBoxWpnStatus1.Text = launchStatus[MainSystemData.LaunchStatus1];
+            textBoxWpnStatus2.Text = launchStatus[MainSystemData.LaunchStatus2];
+
+            // Send PING command
+            if (SendPingCommands)
+            {
+                byte[] buff = new byte[] { 1, 2, 3, 4 }; // dummy
+                byte[] outputPacket = new byte[100];
+                int size = comm433.GenerateTXPacket(0x10, buff, 4, outputPacket);
+                serialPort1.Write(outputPacket, 0, size);
+            }
         }
 
+        private void ProcessMessage(byte type, byte[] data, byte len)
+        {
+            // data
+            if (type == 0x20)
+            {
+                SCommEthData commData = (SCommEthData)Comm.FromBytes(data, new SCommEthData());
+                MainSystemData = commData;
+            }
+        }
 
         Font font = new Font("Times New Roman", 10); 
         private void panelGraph_Paint(object sender, PaintEventArgs e)
@@ -154,6 +179,61 @@ namespace LoadCellV2
             p.Y = (int)(570 - temperature * 2);            
 
             return p;
+        }
+
+        private void buttonWpnCommand_Click(object sender, EventArgs e)
+        {
+            if (sender == buttonWpnArm1)
+            {
+                if (buttonWpnArm1.Text == "Arm")
+                {
+                    buttonWpnArm1.Text = "Dearm";
+                    WpnCommand(0, 1);
+                }
+                else
+                {
+                    buttonWpnArm1.Text = "Arm";
+                    WpnCommand(0, 3);
+                }
+            }
+            if (sender == buttonWpnArm2)
+            {
+                if (buttonWpnArm2.Text == "Arm")
+                {
+                    buttonWpnArm2.Text = "Dearm";
+                    WpnCommand(1, 1);
+                }
+                else
+                {
+                    buttonWpnArm2.Text = "Arm";
+                    WpnCommand(1, 3);
+                }
+            }
+            if (sender == buttonWpnFire1)
+            {
+                WpnCommand(0, 2);
+            }
+            if (sender == buttonWpnFire2)
+            {
+                WpnCommand(1, 2);
+            }
+        }
+
+        public void WpnCommand(byte index, byte command)
+        {
+            uint code = 0x43782843;
+            uint timer = 2000; // ticks, 2 sec
+            SCommLaunch launch = new SCommLaunch();
+            launch.Command = command;
+            launch.Index = index;
+            if (command == 2) launch.CodeTimer = timer;
+            else launch.CodeTimer = code;
+
+            // Send
+            byte[] toSend = Comm.GetBytes(launch);
+            byte[] outputPacket = new byte[100];
+            int size = comm433.GenerateTXPacket(0x30, toSend, (byte)toSend.Length, outputPacket);
+            serialPort1.Write(outputPacket, 0, size);
         }
     }
 }

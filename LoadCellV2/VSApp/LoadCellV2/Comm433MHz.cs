@@ -8,6 +8,9 @@ namespace LoadCellV2
 {
     class Comm433MHz
     {
+        public delegate void ProcessMessageDelegate(byte type, byte[] data, byte len);
+
+
         private enum ERXPhase { HDR_FF, HDR_FE, HDR_A5, HDR_5A, TYPE, LEN, DATA, CRC_A, CRC_B, CRC_C, CRC_D };
         private ERXPhase RXPhase;
 
@@ -22,7 +25,7 @@ namespace LoadCellV2
         public int CrcErrors = 0;
         public int HeaderFails = 0;
 
-        public void NewRXPacket(byte[] data, int dataLen)
+        public void NewRXPacket(byte[] data, int dataLen, ProcessMessageDelegate ProcessMessage)
         {
             // RX Parser
             for (int i = 0; i != dataLen; i++)
@@ -129,11 +132,6 @@ namespace LoadCellV2
                 }
 
             }
-        }
-
-        private void ProcessMessage(byte type, byte[] data, byte len)
-        {
-            
         }
 
         public int GenerateTXPacket(byte Type, byte[] Data, byte Len, byte[] OutputPacket)
