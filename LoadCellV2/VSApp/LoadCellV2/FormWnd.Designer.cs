@@ -54,6 +54,16 @@
             this.textBoxWpnStatus1 = new System.Windows.Forms.TextBox();
             this.label69 = new System.Windows.Forms.Label();
             this.buttonWpnArm1 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxBufferIndex = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBoxForceN = new System.Windows.Forms.TextBox();
+            this.textBoxOffset = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBoxGain = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.buttonUpdateOffsets = new System.Windows.Forms.Button();
+            this.buttonBufferDownload = new System.Windows.Forms.Button();
             this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -149,7 +159,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1534, 181);
+            this.label2.Location = new System.Drawing.Point(1542, 217);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(94, 20);
@@ -158,7 +168,7 @@
             // 
             // textBoxCommCRCErrors
             // 
-            this.textBoxCommCRCErrors.Location = new System.Drawing.Point(1650, 178);
+            this.textBoxCommCRCErrors.Location = new System.Drawing.Point(1658, 214);
             this.textBoxCommCRCErrors.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxCommCRCErrors.Name = "textBoxCommCRCErrors";
             this.textBoxCommCRCErrors.ReadOnly = true;
@@ -169,7 +179,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(1534, 216);
+            this.label3.Location = new System.Drawing.Point(1542, 252);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(113, 20);
@@ -178,7 +188,7 @@
             // 
             // textBoxCommHeaderErrors
             // 
-            this.textBoxCommHeaderErrors.Location = new System.Drawing.Point(1650, 213);
+            this.textBoxCommHeaderErrors.Location = new System.Drawing.Point(1658, 249);
             this.textBoxCommHeaderErrors.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxCommHeaderErrors.Name = "textBoxCommHeaderErrors";
             this.textBoxCommHeaderErrors.ReadOnly = true;
@@ -189,7 +199,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(1534, 250);
+            this.label4.Location = new System.Drawing.Point(1542, 286);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(108, 20);
@@ -198,7 +208,7 @@
             // 
             // textBoxCommMsgOK
             // 
-            this.textBoxCommMsgOK.Location = new System.Drawing.Point(1650, 247);
+            this.textBoxCommMsgOK.Location = new System.Drawing.Point(1658, 283);
             this.textBoxCommMsgOK.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxCommMsgOK.Name = "textBoxCommMsgOK";
             this.textBoxCommMsgOK.ReadOnly = true;
@@ -295,11 +305,113 @@
             this.buttonWpnArm1.UseVisualStyleBackColor = true;
             this.buttonWpnArm1.Click += new System.EventHandler(this.buttonWpnCommand_Click);
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(1544, 167);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(52, 20);
+            this.label7.TabIndex = 43;
+            this.label7.Text = "Index:";
+            // 
+            // textBoxBufferIndex
+            // 
+            this.textBoxBufferIndex.Location = new System.Drawing.Point(1614, 164);
+            this.textBoxBufferIndex.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxBufferIndex.Name = "textBoxBufferIndex";
+            this.textBoxBufferIndex.ReadOnly = true;
+            this.textBoxBufferIndex.Size = new System.Drawing.Size(84, 26);
+            this.textBoxBufferIndex.TabIndex = 42;
+            this.textBoxBufferIndex.Text = "0";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(1711, 130);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(77, 20);
+            this.label8.TabIndex = 45;
+            this.label8.Text = "Force [N]:";
+            // 
+            // textBoxForceN
+            // 
+            this.textBoxForceN.Location = new System.Drawing.Point(1796, 127);
+            this.textBoxForceN.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxForceN.Name = "textBoxForceN";
+            this.textBoxForceN.ReadOnly = true;
+            this.textBoxForceN.Size = new System.Drawing.Size(84, 26);
+            this.textBoxForceN.TabIndex = 44;
+            this.textBoxForceN.Text = "0";
+            // 
+            // textBoxOffset
+            // 
+            this.textBoxOffset.Location = new System.Drawing.Point(1585, 12);
+            this.textBoxOffset.Name = "textBoxOffset";
+            this.textBoxOffset.Size = new System.Drawing.Size(128, 26);
+            this.textBoxOffset.TabIndex = 47;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(1525, 14);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(57, 20);
+            this.label9.TabIndex = 46;
+            this.label9.Text = "Offset:";
+            // 
+            // textBoxGain
+            // 
+            this.textBoxGain.Location = new System.Drawing.Point(1585, 44);
+            this.textBoxGain.Name = "textBoxGain";
+            this.textBoxGain.Size = new System.Drawing.Size(128, 26);
+            this.textBoxGain.TabIndex = 49;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(1525, 46);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(43, 20);
+            this.label10.TabIndex = 48;
+            this.label10.Text = "Gain";
+            // 
+            // buttonUpdateOffsets
+            // 
+            this.buttonUpdateOffsets.Location = new System.Drawing.Point(1728, 12);
+            this.buttonUpdateOffsets.Name = "buttonUpdateOffsets";
+            this.buttonUpdateOffsets.Size = new System.Drawing.Size(70, 56);
+            this.buttonUpdateOffsets.TabIndex = 50;
+            this.buttonUpdateOffsets.Text = "Set";
+            this.buttonUpdateOffsets.UseVisualStyleBackColor = true;
+            this.buttonUpdateOffsets.Click += new System.EventHandler(this.buttonUpdateOffsets_Click);
+            // 
+            // buttonBufferDownload
+            // 
+            this.buttonBufferDownload.Location = new System.Drawing.Point(1638, 619);
+            this.buttonBufferDownload.Name = "buttonBufferDownload";
+            this.buttonBufferDownload.Size = new System.Drawing.Size(104, 56);
+            this.buttonBufferDownload.TabIndex = 51;
+            this.buttonBufferDownload.Text = "Download";
+            this.buttonBufferDownload.UseVisualStyleBackColor = true;
+            this.buttonBufferDownload.Click += new System.EventHandler(this.buttonBufferDownload_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1920, 1031);
+            this.Controls.Add(this.buttonBufferDownload);
+            this.Controls.Add(this.buttonUpdateOffsets);
+            this.Controls.Add(this.textBoxGain);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.textBoxOffset);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.textBoxForceN);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.textBoxBufferIndex);
             this.Controls.Add(this.groupBox10);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBoxCommMsgOK);
@@ -352,6 +464,16 @@
         private System.Windows.Forms.TextBox textBoxWpnStatus1;
         private System.Windows.Forms.Label label69;
         private System.Windows.Forms.Button buttonWpnArm1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBoxBufferIndex;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBoxForceN;
+        private System.Windows.Forms.TextBox textBoxOffset;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBoxGain;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button buttonUpdateOffsets;
+        private System.Windows.Forms.Button buttonBufferDownload;
     }
 }
 

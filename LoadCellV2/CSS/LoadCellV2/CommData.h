@@ -11,7 +11,9 @@
 struct SCommEthData
 {
 	unsigned int LoopCounter;
+
 	unsigned int ADCValue;
+	unsigned int DataBufferIndex;
 
 	// Launch
 	unsigned short LaunchStatus1;

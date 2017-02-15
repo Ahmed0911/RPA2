@@ -38,6 +38,7 @@
 #include "LaunchMgr.h"
 #include "CRC32.h"
 #include "Comm433MHz.h"
+#include "DataBuffer.h"
 
 uint32_t g_ui32SysClock;
 
@@ -56,6 +57,8 @@ HopeRF	hopeRF;
 LaunchMgr launch;
 CRC32 crc;
 Comm433MHz comm433MHz;
+DataBuffer dataBuffer;
+
 
 // Global Data
 int MainLoopCounter;
@@ -64,6 +67,8 @@ float PerfCpuTimeMS;
 float PerfCpuTimeMSMAX;
 
 unsigned int ADCValue = 0;
+
+
 
 // Systick
 #define SysTickFrequency 1000
@@ -120,6 +125,18 @@ void main(void)
 		// Launch Process
 		launch.Update();
 
+		// Log Data in ARMED/FIRING state
+		if( launch.WpnState[0] == LAUNCHSTATE_ARMED  || launch.WpnState[0] == LAUNCHSTATE_FIRING)
+		{
+		    // log data
+		    dataBuffer.AddData(ADCValue);
+		}
+		else
+		{
+		    // reset
+		    dataBuffer.Reset();
+		}
+
 		// DBG LED
 		dbgLed.Set(true);
 
@@ -146,6 +163,7 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
             SCommEthData dataToSend;
             dataToSend.LoopCounter = MainLoopCounter;
             dataToSend.ADCValue = ADCValue;
+            dataToSend.DataBufferIndex = dataBuffer.GetBufferPosition();
             dataToSend.LaunchStatus1 = launch.WpnState[0];
             dataToSend.LaunchStatus2 = launch.WpnState[1];
 

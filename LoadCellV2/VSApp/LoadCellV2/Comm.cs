@@ -11,6 +11,7 @@ namespace LoadCellV2
     {
         public uint LoopCounter;
         public uint ADCValue;
+        public uint DataBufferIndex;
 
         // Launch
         public ushort LaunchStatus1;
