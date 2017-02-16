@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/gpio.h"
@@ -113,6 +114,7 @@ void main(void)
 		// ADC + Current Calc
 		adcDrv.Update();
 		ADCValue = adcDrv.GetValue(ADCBATTCURRENT);
+		//ADCValue = (1+sin(MainLoopCounter/1000.0f))*2000; // TEST
 
 		// read serial data
 		BYTE inputBuff[255];
@@ -185,6 +187,20 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
             else if( launchCmd.Command == 3  ) launch.Dearm(launchCmd.Index, launchCmd.CodeTimer);
 
             break;
+        }
+
+        case 0x40: // download request
+        {
+            // fill data
+            SCommDownloaderRequest downloadRequest;
+            memcpy(&downloadRequest, data, dataSize);
+
+            unsigned short buffer[100];
+            dataBuffer.GetBufferData(buffer, downloadRequest.Offset, downloadRequest.Size);
+
+            BYTE outputBuff[255];
+            int bytesToSend = comm433MHz.GenerateTXPacket(0x41, (BYTE*)&buffer, downloadRequest.Size*sizeof(unsigned short), outputBuff);
+            serialU5.Write(outputBuff, bytesToSend);
         }
     }
 }

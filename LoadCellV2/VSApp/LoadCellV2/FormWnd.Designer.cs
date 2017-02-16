@@ -64,6 +64,20 @@
             this.label10 = new System.Windows.Forms.Label();
             this.buttonUpdateOffsets = new System.Windows.Forms.Button();
             this.buttonBufferDownload = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBoxDownloaderRequests = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBoxDownloaderAnswers = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.textBoxDownloaderRetries = new System.Windows.Forms.TextBox();
+            this.buttonBufferDownloaderAbort = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.textBoxDownloaderStatus = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.textBoxDownloaderIndex = new System.Windows.Forms.TextBox();
+            this.radioButtonImmediate = new System.Windows.Forms.RadioButton();
+            this.radioButtonBuffer = new System.Windows.Forms.RadioButton();
+            this.buttonSaveData = new System.Windows.Forms.Button();
             this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -389,7 +403,7 @@
             // 
             // buttonBufferDownload
             // 
-            this.buttonBufferDownload.Location = new System.Drawing.Point(1638, 619);
+            this.buttonBufferDownload.Location = new System.Drawing.Point(1585, 619);
             this.buttonBufferDownload.Name = "buttonBufferDownload";
             this.buttonBufferDownload.Size = new System.Drawing.Size(104, 56);
             this.buttonBufferDownload.TabIndex = 51;
@@ -397,11 +411,169 @@
             this.buttonBufferDownload.UseVisualStyleBackColor = true;
             this.buttonBufferDownload.Click += new System.EventHandler(this.buttonBufferDownload_Click);
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(1542, 765);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(82, 20);
+            this.label11.TabIndex = 53;
+            this.label11.Text = "Requests:";
+            // 
+            // textBoxDownloaderRequests
+            // 
+            this.textBoxDownloaderRequests.Location = new System.Drawing.Point(1658, 762);
+            this.textBoxDownloaderRequests.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxDownloaderRequests.Name = "textBoxDownloaderRequests";
+            this.textBoxDownloaderRequests.ReadOnly = true;
+            this.textBoxDownloaderRequests.Size = new System.Drawing.Size(84, 26);
+            this.textBoxDownloaderRequests.TabIndex = 52;
+            this.textBoxDownloaderRequests.Text = "0";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(1542, 801);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(74, 20);
+            this.label12.TabIndex = 55;
+            this.label12.Text = "Answers:";
+            // 
+            // textBoxDownloaderAnswers
+            // 
+            this.textBoxDownloaderAnswers.Location = new System.Drawing.Point(1658, 798);
+            this.textBoxDownloaderAnswers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxDownloaderAnswers.Name = "textBoxDownloaderAnswers";
+            this.textBoxDownloaderAnswers.ReadOnly = true;
+            this.textBoxDownloaderAnswers.Size = new System.Drawing.Size(84, 26);
+            this.textBoxDownloaderAnswers.TabIndex = 54;
+            this.textBoxDownloaderAnswers.Text = "0";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(1542, 837);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(64, 20);
+            this.label13.TabIndex = 57;
+            this.label13.Text = "Retries:";
+            // 
+            // textBoxDownloaderRetries
+            // 
+            this.textBoxDownloaderRetries.Location = new System.Drawing.Point(1658, 834);
+            this.textBoxDownloaderRetries.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxDownloaderRetries.Name = "textBoxDownloaderRetries";
+            this.textBoxDownloaderRetries.ReadOnly = true;
+            this.textBoxDownloaderRetries.Size = new System.Drawing.Size(84, 26);
+            this.textBoxDownloaderRetries.TabIndex = 56;
+            this.textBoxDownloaderRetries.Text = "0";
+            // 
+            // buttonBufferDownloaderAbort
+            // 
+            this.buttonBufferDownloaderAbort.Location = new System.Drawing.Point(1715, 619);
+            this.buttonBufferDownloaderAbort.Name = "buttonBufferDownloaderAbort";
+            this.buttonBufferDownloaderAbort.Size = new System.Drawing.Size(104, 56);
+            this.buttonBufferDownloaderAbort.TabIndex = 58;
+            this.buttonBufferDownloaderAbort.Text = "Abort";
+            this.buttonBufferDownloaderAbort.UseVisualStyleBackColor = true;
+            this.buttonBufferDownloaderAbort.Click += new System.EventHandler(this.buttonBufferDownloaderAbort_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(1542, 693);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(60, 20);
+            this.label14.TabIndex = 60;
+            this.label14.Text = "Status:";
+            // 
+            // textBoxDownloaderStatus
+            // 
+            this.textBoxDownloaderStatus.Location = new System.Drawing.Point(1658, 690);
+            this.textBoxDownloaderStatus.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxDownloaderStatus.Name = "textBoxDownloaderStatus";
+            this.textBoxDownloaderStatus.ReadOnly = true;
+            this.textBoxDownloaderStatus.Size = new System.Drawing.Size(140, 26);
+            this.textBoxDownloaderStatus.TabIndex = 59;
+            this.textBoxDownloaderStatus.Text = "0";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(1542, 729);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(52, 20);
+            this.label15.TabIndex = 62;
+            this.label15.Text = "Index:";
+            // 
+            // textBoxDownloaderIndex
+            // 
+            this.textBoxDownloaderIndex.Location = new System.Drawing.Point(1658, 726);
+            this.textBoxDownloaderIndex.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxDownloaderIndex.Name = "textBoxDownloaderIndex";
+            this.textBoxDownloaderIndex.ReadOnly = true;
+            this.textBoxDownloaderIndex.Size = new System.Drawing.Size(140, 26);
+            this.textBoxDownloaderIndex.TabIndex = 61;
+            this.textBoxDownloaderIndex.Text = "0";
+            // 
+            // radioButtonImmediate
+            // 
+            this.radioButtonImmediate.AutoSize = true;
+            this.radioButtonImmediate.Checked = true;
+            this.radioButtonImmediate.Location = new System.Drawing.Point(1546, 883);
+            this.radioButtonImmediate.Name = "radioButtonImmediate";
+            this.radioButtonImmediate.Size = new System.Drawing.Size(109, 24);
+            this.radioButtonImmediate.TabIndex = 63;
+            this.radioButtonImmediate.TabStop = true;
+            this.radioButtonImmediate.Text = "Immediate";
+            this.radioButtonImmediate.UseVisualStyleBackColor = true;
+            this.radioButtonImmediate.CheckedChanged += new System.EventHandler(this.radioButtonChanged);
+            // 
+            // radioButtonBuffer
+            // 
+            this.radioButtonBuffer.AutoSize = true;
+            this.radioButtonBuffer.Location = new System.Drawing.Point(1546, 913);
+            this.radioButtonBuffer.Name = "radioButtonBuffer";
+            this.radioButtonBuffer.Size = new System.Drawing.Size(78, 24);
+            this.radioButtonBuffer.TabIndex = 64;
+            this.radioButtonBuffer.Text = "Buffer";
+            this.radioButtonBuffer.UseVisualStyleBackColor = true;
+            this.radioButtonBuffer.CheckedChanged += new System.EventHandler(this.radioButtonChanged);
+            // 
+            // buttonSaveData
+            // 
+            this.buttonSaveData.Location = new System.Drawing.Point(1684, 897);
+            this.buttonSaveData.Name = "buttonSaveData";
+            this.buttonSaveData.Size = new System.Drawing.Size(168, 89);
+            this.buttonSaveData.TabIndex = 65;
+            this.buttonSaveData.Text = "Save";
+            this.buttonSaveData.UseVisualStyleBackColor = true;
+            this.buttonSaveData.Click += new System.EventHandler(this.buttonSaveData_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1920, 1031);
+            this.Controls.Add(this.buttonSaveData);
+            this.Controls.Add(this.radioButtonBuffer);
+            this.Controls.Add(this.radioButtonImmediate);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.textBoxDownloaderIndex);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.textBoxDownloaderStatus);
+            this.Controls.Add(this.buttonBufferDownloaderAbort);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.textBoxDownloaderRetries);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.textBoxDownloaderAnswers);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.textBoxDownloaderRequests);
             this.Controls.Add(this.buttonBufferDownload);
             this.Controls.Add(this.buttonUpdateOffsets);
             this.Controls.Add(this.textBoxGain);
@@ -474,6 +646,20 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button buttonUpdateOffsets;
         private System.Windows.Forms.Button buttonBufferDownload;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox textBoxDownloaderRequests;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox textBoxDownloaderAnswers;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox textBoxDownloaderRetries;
+        private System.Windows.Forms.Button buttonBufferDownloaderAbort;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBoxDownloaderStatus;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox textBoxDownloaderIndex;
+        private System.Windows.Forms.RadioButton radioButtonImmediate;
+        private System.Windows.Forms.RadioButton radioButtonBuffer;
+        private System.Windows.Forms.Button buttonSaveData;
     }
 }
 

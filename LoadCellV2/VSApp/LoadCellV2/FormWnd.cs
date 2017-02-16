@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Reflection;
+using System.IO;
 
 namespace LoadCellV2
 {
@@ -30,6 +31,7 @@ namespace LoadCellV2
             public uint ADCValue;
         };
         List<SData> dataList = new List<SData>();
+        List<SData> downloadedDataList = new List<SData>();
 
         // OFFSET/GAIN
         private float LoadCellOffset = 2000;
@@ -79,8 +81,7 @@ namespace LoadCellV2
             // 2. Process Command
             comm433.NewRXPacket(buffer, dataLen, ProcessMessage);
 
-
-            // 4. Add Data To buffer and redraw
+            // 3. Add Data To buffer and redraw
             if(MainSystemData.DataBufferIndex == 0)
             {
                 // reset buffer
@@ -93,7 +94,14 @@ namespace LoadCellV2
                 dat.ADCValue = MainSystemData.ADCValue;
                 dataList.Add(dat);
                 panelGraph.Refresh();
-            }                
+            }
+
+            // 4. Update downloader (if needed)
+            buffDownloader.Update(SendRequest);
+            if( buffDownloader.Done() )
+            {
+                SendPingCommands = true; // restore ping after download is completed
+            }
 
             // update data            
             textBoxCommMsgOK.Text = comm433.MsgReceivedOK.ToString();
@@ -107,6 +115,12 @@ namespace LoadCellV2
             float Newtons = (MainSystemData.ADCValue - LoadCellOffset) * LoadCellGain;
             textBoxForceN.Text = Newtons.ToString("0.0");
 
+            // downloader
+            textBoxDownloaderRequests.Text = buffDownloader.RequestsSent.ToString();
+            textBoxDownloaderAnswers.Text = buffDownloader.AnswersReceived.ToString();
+            textBoxDownloaderRetries.Text = buffDownloader.Retries.ToString();
+            textBoxDownloaderStatus.Text = buffDownloader.Phase.ToString();
+            textBoxDownloaderIndex.Text = buffDownloader.Index.ToString();
 
             // Launch
             string[] launchStatus = { "Idle", "Armed", "Firing" };
@@ -135,6 +149,19 @@ namespace LoadCellV2
             {
                 SCommEthData commData = (SCommEthData)Comm.FromBytes(data, new SCommEthData());
                 MainSystemData = commData;
+            }
+            if( type == 0x41)
+            {
+                for (uint i = 0; i != len; i += 2)
+                {
+                    ushort ADCVal = BitConverter.ToUInt16(data, (int)i);
+                    uint index = buffDownloader.Index + (i/2);
+                    SData chunk;
+                    chunk.ADCValue = ADCVal;
+                    chunk.IndexTimeMS = index;
+                    downloadedDataList.Add(chunk);
+                }
+                buffDownloader.AnswerReceived();
             }
         }
 
@@ -180,16 +207,32 @@ namespace LoadCellV2
 
 
             // Draw Data
-            if( dataList.Count > 1)
-            { 
-                List<Point> points = new List<Point>();
-
-                for (int i = 0; i != dataList.Count; i++)
+            if (radioButtonImmediate.Checked)
+            {
+                if (dataList.Count > 1)
                 {
-                    points.Add(ConvertPoint(dataList[i].IndexTimeMS, dataList[i].ADCValue));
+                    List<Point> points = new List<Point>();
+
+                    for (int i = 0; i != dataList.Count; i++)
+                    {
+                        points.Add(ConvertPoint(dataList[i].IndexTimeMS, dataList[i].ADCValue));
+                    }
+                    g.DrawLines(Pens.Yellow, points.ToArray());
                 }
-                g.DrawLines(Pens.Yellow, points.ToArray());
-            }            
+            }
+            else if(radioButtonBuffer.Checked)
+            {
+                if (downloadedDataList.Count > 1)
+                {
+                    List<Point> points = new List<Point>();
+
+                    for (int i = 0; i != downloadedDataList.Count; i++)
+                    {
+                        points.Add(ConvertPoint(downloadedDataList[i].IndexTimeMS, downloadedDataList[i].ADCValue));
+                    }
+                    g.DrawLines(Pens.Green, points.ToArray());
+                }
+            }           
         }
 
        
@@ -265,7 +308,60 @@ namespace LoadCellV2
 
         private void buttonBufferDownload_Click(object sender, EventArgs e)
         {
+            // kill ping!
+            SendPingCommands = false;
+
+            // erase buffer
+            downloadedDataList.Clear();
+
+            // start downloader
             buffDownloader.ExecuteDownloader();
+        }
+
+        // Downloader stuff
+        public void SendRequest(uint offset, uint size)
+        {
+            // Send
+            SCommDownloaderRequest downloadRequest;
+            downloadRequest.Offset = offset;
+            downloadRequest.Size = size;
+            byte[] toSend = Comm.GetBytes(downloadRequest);
+            byte[] outputPacket = new byte[100];
+            int bytesToSend = comm433.GenerateTXPacket(0x40, toSend, (byte)toSend.Length, outputPacket);
+            serialPort1.Write(outputPacket, 0, bytesToSend);
+        }
+
+        private void buttonBufferDownloaderAbort_Click(object sender, EventArgs e)
+        {
+            buffDownloader.Abort();
+        }
+
+        private void radioButtonChanged(object sender, EventArgs e)
+        {
+            panelGraph.Refresh();
+        }
+
+        private void buttonSaveData_Click(object sender, EventArgs e)
+        {
+            string extension =string.Format("{0}-{1}-{2}", DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+
+            StreamWriter sw = File.CreateText(string.Format("outputlogimmediate-{0}.txt", extension));
+            sw.WriteLine("TimeMS ADC");
+            for (int i = 0; i != dataList.Count; i++)
+            {
+                sw.WriteLine("{0} {1}", dataList[i].IndexTimeMS, dataList[i].ADCValue);
+            }
+            sw.Close();
+
+            sw = File.CreateText(string.Format("outputlogbuffer-{0}.txt", extension));
+            sw.WriteLine("TimeMS ADC");
+            for (int i = 0; i != downloadedDataList.Count; i++)
+            {
+                sw.WriteLine("{0} {1}", downloadedDataList[i].IndexTimeMS, downloadedDataList[i].ADCValue);
+            }
+            sw.Close();
+
+            MessageBox.Show(string.Format("Immediate: {0}, Buffered: {1}", dataList.Count, downloadedDataList.Count), string.Format("Data Saved: {0}", extension));
         }
     }
 }

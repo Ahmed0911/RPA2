@@ -29,9 +29,11 @@ struct SCommLaunch
 	unsigned int CodeTimer;
 };
 
-// Ethernet packets
-// data[0] = 0x42; // magic codes
-// data[1] = 0x24; // magic codes
-// data[2] = TYPE; // [0x10 - PING, 0x20 - DATA...]
-// data[3] = data....
+struct SCommDownloaderRequest
+{
+    unsigned int Offset;
+    unsigned int Size;
+};
+
+
 #endif /* A2CODE_COMMDATA_H_ */

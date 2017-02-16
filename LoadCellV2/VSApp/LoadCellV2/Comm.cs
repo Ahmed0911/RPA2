@@ -27,6 +27,11 @@ namespace LoadCellV2
         public uint CodeTimer;
     };
 
+    struct SCommDownloaderRequest
+    {
+        public uint Offset;
+        public uint Size;
+    };
 
     class Comm
     {
