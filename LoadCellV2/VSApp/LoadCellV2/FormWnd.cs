@@ -19,6 +19,7 @@ namespace LoadCellV2
         private BufferDownloader buffDownloader = new BufferDownloader();
 
         bool SendPingCommands = false;
+        bool SendNewPing = true;
 
         // Data
         SCommEthData MainSystemData;
@@ -135,10 +136,14 @@ namespace LoadCellV2
             // Send PING command
             if (SendPingCommands)
             {
-                byte[] buff = new byte[] { 1, 2, 3, 4 }; // dummy
-                byte[] outputPacket = new byte[100];
-                int size = comm433.GenerateTXPacket(0x10, buff, 4, outputPacket);
-                serialPort1.Write(outputPacket, 0, size);
+                if (SendNewPing)
+                {
+                    byte[] buff = new byte[] { 1, 2, 3, 4 }; // dummy
+                    byte[] outputPacket = new byte[100];
+                    int size = comm433.GenerateTXPacket(0x10, buff, 4, outputPacket);
+                    serialPort1.Write(outputPacket, 0, size);
+                    SendNewPing = false;
+                }
             }
         }
 
@@ -149,6 +154,7 @@ namespace LoadCellV2
             {
                 SCommEthData commData = (SCommEthData)Comm.FromBytes(data, new SCommEthData());
                 MainSystemData = commData;
+                SendNewPing = true;
             }
             if( type == 0x41)
             {
@@ -285,6 +291,7 @@ namespace LoadCellV2
 
         public void WpnCommand(byte index, byte command)
         {
+            System.Threading.Thread.Sleep(200);
             uint code = 0x43782843;
             uint timer = 2000; // ticks, 2 sec
             SCommLaunch launch = new SCommLaunch();
@@ -298,6 +305,7 @@ namespace LoadCellV2
             byte[] outputPacket = new byte[100];
             int size = comm433.GenerateTXPacket(0x30, toSend, (byte)toSend.Length, outputPacket);
             serialPort1.Write(outputPacket, 0, size);
+            SendNewPing = true;
         }
 
         private void buttonUpdateOffsets_Click(object sender, EventArgs e)
@@ -362,6 +370,11 @@ namespace LoadCellV2
             sw.Close();
 
             MessageBox.Show(string.Format("Immediate: {0}, Buffered: {1}", dataList.Count, downloadedDataList.Count), string.Format("Data Saved: {0}", extension));
+        }
+
+        private void buttonPing_Click(object sender, EventArgs e)
+        {
+            SendNewPing = true;
         }
     }
 }

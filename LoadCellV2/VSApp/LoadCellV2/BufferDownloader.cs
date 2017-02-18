@@ -13,7 +13,7 @@ namespace LoadCellV2
         public uint Index; // requested index!
         private const uint ChunkSize = 20;
         private const uint TotalSize = 50000;
-        private const uint TIMEOUT = 5; //5 ticks
+        private const uint TIMEOUT = 10; //5 ticks
 
         private uint TimeoutCounter;
 

@@ -78,6 +78,7 @@
             this.radioButtonImmediate = new System.Windows.Forms.RadioButton();
             this.radioButtonBuffer = new System.Windows.Forms.RadioButton();
             this.buttonSaveData = new System.Windows.Forms.Button();
+            this.buttonPing = new System.Windows.Forms.Button();
             this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -148,6 +149,7 @@
             // 
             // timerTicker
             // 
+            this.timerTicker.Interval = 50;
             this.timerTicker.Tick += new System.EventHandler(this.timerTicker_Tick);
             // 
             // label6
@@ -555,11 +557,22 @@
             this.buttonSaveData.UseVisualStyleBackColor = true;
             this.buttonSaveData.Click += new System.EventHandler(this.buttonSaveData_Click);
             // 
+            // buttonPing
+            // 
+            this.buttonPing.Location = new System.Drawing.Point(1758, 234);
+            this.buttonPing.Name = "buttonPing";
+            this.buttonPing.Size = new System.Drawing.Size(70, 56);
+            this.buttonPing.TabIndex = 66;
+            this.buttonPing.Text = "Ping";
+            this.buttonPing.UseVisualStyleBackColor = true;
+            this.buttonPing.Click += new System.EventHandler(this.buttonPing_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1920, 1031);
+            this.Controls.Add(this.buttonPing);
             this.Controls.Add(this.buttonSaveData);
             this.Controls.Add(this.radioButtonBuffer);
             this.Controls.Add(this.radioButtonImmediate);
@@ -660,6 +673,7 @@
         private System.Windows.Forms.RadioButton radioButtonImmediate;
         private System.Windows.Forms.RadioButton radioButtonBuffer;
         private System.Windows.Forms.Button buttonSaveData;
+        private System.Windows.Forms.Button buttonPing;
     }
 }
 
