@@ -35,8 +35,8 @@ namespace LoadCellV2
         List<SData> downloadedDataList = new List<SData>();
 
         // OFFSET/GAIN
-        private float LoadCellOffset = 2000;
-        private float LoadCellGain = 0.01f;
+        private float LoadCellOffset = 2938;
+        private float LoadCellGain = -0.030f;
 
         public MainForm()
         {
