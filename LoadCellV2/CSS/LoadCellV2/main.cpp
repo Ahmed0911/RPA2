@@ -66,10 +66,10 @@ int MainLoopCounter;
 float PerfLoopTimeMS;
 float PerfCpuTimeMS;
 float PerfCpuTimeMSMAX;
-
 unsigned int ADCValue = 0;
+bool PingedSendData = false;
 
-
+void SendLorCommData(void);
 
 // Systick
 #define SysTickFrequency 1000
@@ -139,6 +139,9 @@ void main(void)
 		    dataBuffer.Reset();
 		}
 
+		// Send Data
+		SendLorCommData();
+
 		// DBG LED
 		dbgLed.Set(true);
 
@@ -155,24 +158,36 @@ void main(void)
 	}
 }
 
+void SendLorCommData(void)
+{
+	// Send to Lora
+	if( PingedSendData )
+	{
+	    // Send Data
+        SCommEthData dataToSend;
+        dataToSend.LoopCounter = MainLoopCounter;
+        dataToSend.ADCValue = ADCValue;
+        dataToSend.DataBufferIndex = dataBuffer.GetBufferPosition();
+        dataToSend.LaunchStatus1 = launch.WpnState[0];
+        dataToSend.LaunchStatus2 = launch.WpnState[1];
+
+        BYTE outputBuff[255];
+        int bytesToSend = comm433MHz.GenerateTXPacket(0x20, (BYTE*)&dataToSend, sizeof(dataToSend), outputBuff);
+        serialU5.Write(outputBuff, bytesToSend);
+
+	    PingedSendData = false;
+	}
+}
+
+
 void ProcessCommand(int cmd, unsigned char* data, int dataSize)
 {
     switch( cmd )
     {
         case 0x10: // PING
         {
-            // Send Data
-            SCommEthData dataToSend;
-            dataToSend.LoopCounter = MainLoopCounter;
-            dataToSend.ADCValue = ADCValue;
-            dataToSend.DataBufferIndex = dataBuffer.GetBufferPosition();
-            dataToSend.LaunchStatus1 = launch.WpnState[0];
-            dataToSend.LaunchStatus2 = launch.WpnState[1];
-
-            BYTE outputBuff[255];
-            int bytesToSend = comm433MHz.GenerateTXPacket(0x20, (BYTE*)&dataToSend, sizeof(dataToSend), outputBuff);
-            serialU5.Write(outputBuff, bytesToSend);
-
+            // Schedule data transfer
+            PingedSendData = true;
             break;
         }
 
