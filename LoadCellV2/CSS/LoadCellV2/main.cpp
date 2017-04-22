@@ -201,6 +201,12 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
             else if( launchCmd.Command == 2  ) launch.Fire(launchCmd.Index, launchCmd.CodeTimer);
             else if( launchCmd.Command == 3  ) launch.Dearm(launchCmd.Index, launchCmd.CodeTimer);
 
+            // Send ACK to LORA
+            BYTE ackCode = 0x30;
+            BYTE outputBuff[255];
+            int bytesToSend = comm433MHz.GenerateTXPacket(0xA0, (BYTE*)&ackCode, 1, outputBuff);
+            serialU5.Write(outputBuff, bytesToSend);
+
             break;
         }
 
@@ -216,6 +222,8 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
             BYTE outputBuff[255];
             int bytesToSend = comm433MHz.GenerateTXPacket(0x41, (BYTE*)&buffer, downloadRequest.Size*sizeof(unsigned short), outputBuff);
             serialU5.Write(outputBuff, bytesToSend);
+
+            // NO ACK, handled directly in CommMgr.cs
         }
     }
 }

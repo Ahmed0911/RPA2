@@ -78,7 +78,8 @@
             this.radioButtonImmediate = new System.Windows.Forms.RadioButton();
             this.radioButtonBuffer = new System.Windows.Forms.RadioButton();
             this.buttonSaveData = new System.Windows.Forms.Button();
-            this.buttonPing = new System.Windows.Forms.Button();
+            this.textBoxCommTimeoutCnt = new System.Windows.Forms.TextBox();
+            this.label55 = new System.Windows.Forms.Label();
             this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -149,7 +150,7 @@
             // 
             // timerTicker
             // 
-            this.timerTicker.Interval = 50;
+            this.timerTicker.Interval = 10;
             this.timerTicker.Tick += new System.EventHandler(this.timerTicker_Tick);
             // 
             // label6
@@ -251,6 +252,7 @@
             // 
             // buttonWpnFire2
             // 
+            this.buttonWpnFire2.Enabled = false;
             this.buttonWpnFire2.Location = new System.Drawing.Point(278, 100);
             this.buttonWpnFire2.Name = "buttonWpnFire2";
             this.buttonWpnFire2.Size = new System.Drawing.Size(88, 56);
@@ -261,6 +263,7 @@
             // 
             // textBoxWpnStatus2
             // 
+            this.textBoxWpnStatus2.Enabled = false;
             this.textBoxWpnStatus2.Location = new System.Drawing.Point(68, 116);
             this.textBoxWpnStatus2.Name = "textBoxWpnStatus2";
             this.textBoxWpnStatus2.Size = new System.Drawing.Size(128, 26);
@@ -269,6 +272,7 @@
             // label70
             // 
             this.label70.AutoSize = true;
+            this.label70.Enabled = false;
             this.label70.Location = new System.Drawing.Point(8, 118);
             this.label70.Name = "label70";
             this.label70.Size = new System.Drawing.Size(55, 20);
@@ -277,6 +281,7 @@
             // 
             // buttonWpnArm2
             // 
+            this.buttonWpnArm2.Enabled = false;
             this.buttonWpnArm2.Location = new System.Drawing.Point(202, 100);
             this.buttonWpnArm2.Name = "buttonWpnArm2";
             this.buttonWpnArm2.Size = new System.Drawing.Size(70, 56);
@@ -557,22 +562,33 @@
             this.buttonSaveData.UseVisualStyleBackColor = true;
             this.buttonSaveData.Click += new System.EventHandler(this.buttonSaveData_Click);
             // 
-            // buttonPing
+            // textBoxCommTimeoutCnt
             // 
-            this.buttonPing.Location = new System.Drawing.Point(1758, 234);
-            this.buttonPing.Name = "buttonPing";
-            this.buttonPing.Size = new System.Drawing.Size(70, 56);
-            this.buttonPing.TabIndex = 66;
-            this.buttonPing.Text = "Ping";
-            this.buttonPing.UseVisualStyleBackColor = true;
-            this.buttonPing.Click += new System.EventHandler(this.buttonPing_Click);
+            this.textBoxCommTimeoutCnt.Location = new System.Drawing.Point(1658, 318);
+            this.textBoxCommTimeoutCnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxCommTimeoutCnt.Name = "textBoxCommTimeoutCnt";
+            this.textBoxCommTimeoutCnt.ReadOnly = true;
+            this.textBoxCommTimeoutCnt.Size = new System.Drawing.Size(84, 26);
+            this.textBoxCommTimeoutCnt.TabIndex = 67;
+            this.textBoxCommTimeoutCnt.Text = "0";
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(1542, 320);
+            this.label55.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(95, 20);
+            this.label55.TabIndex = 66;
+            this.label55.Text = "TimeoutCnt:";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1920, 1031);
-            this.Controls.Add(this.buttonPing);
+            this.Controls.Add(this.textBoxCommTimeoutCnt);
+            this.Controls.Add(this.label55);
             this.Controls.Add(this.buttonSaveData);
             this.Controls.Add(this.radioButtonBuffer);
             this.Controls.Add(this.radioButtonImmediate);
@@ -673,7 +689,8 @@
         private System.Windows.Forms.RadioButton radioButtonImmediate;
         private System.Windows.Forms.RadioButton radioButtonBuffer;
         private System.Windows.Forms.Button buttonSaveData;
-        private System.Windows.Forms.Button buttonPing;
+        private System.Windows.Forms.TextBox textBoxCommTimeoutCnt;
+        private System.Windows.Forms.Label label55;
     }
 }
 

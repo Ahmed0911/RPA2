@@ -14,12 +14,10 @@ using System.IO;
 namespace LoadCellV2
 {
     public partial class MainForm : Form
-    {
-        private Comm433MHz comm433 = new Comm433MHz();
+    {        
+        // CommMgr
+        private CommMgr commMgr = new CommMgr();
         private BufferDownloader buffDownloader = new BufferDownloader();
-
-        bool SendPingCommands = false;
-        bool SendNewPing = true;
 
         // Data
         SCommEthData MainSystemData;
@@ -43,9 +41,8 @@ namespace LoadCellV2
             InitializeComponent();
 
             // enumerate serial ports
-            string[] ports = SerialPort.GetPortNames();
-            comboBoxPorts.Items.AddRange(ports);
-            if (ports.Length > 0 ) comboBoxPorts.SelectedIndex = ports.Length - 1;
+            comboBoxPorts.Items.AddRange(SerialPort.GetPortNames());
+            if (comboBoxPorts.Items.Count > 0) comboBoxPorts.SelectedIndex = comboBoxPorts.Items.Count-1;
 
             textBoxOffset.Text = LoadCellOffset.ToString();
             textBoxGain.Text = LoadCellGain.ToString();
@@ -58,13 +55,10 @@ namespace LoadCellV2
         {
             try
             {
-                serialPort1.BaudRate = 115200;
-                serialPort1.PortName = (string)comboBoxPorts.SelectedItem;
-                serialPort1.Open();
+                commMgr.Open((string)comboBoxPorts.SelectedItem, ProcessMessage);
 
                 buttonOpen.Enabled = false;
                 timerTicker.Enabled = true;
-                SendPingCommands = true;
             }
             catch(Exception ex)
             {
@@ -73,14 +67,11 @@ namespace LoadCellV2
         }
 
         private void timerTicker_Tick(object sender, EventArgs e)
-        {
-            // 1. Get data from serial
-            int dataLen = serialPort1.BytesToRead;
-            byte[] buffer = new byte[dataLen];
-            serialPort1.Read(buffer, 0, dataLen);
-
-            // 2. Process Command
-            comm433.NewRXPacket(buffer, dataLen, ProcessMessage);
+        {         
+            ///////////////////////////////
+            // Process Serial Data
+            ///////////////////////////////
+            commMgr.Update(10);                        
 
             // 3. Add Data To buffer and redraw
             if(MainSystemData.DataBufferIndex == 0)
@@ -99,15 +90,12 @@ namespace LoadCellV2
 
             // 4. Update downloader (if needed)
             buffDownloader.Update(SendRequest);
-            if( buffDownloader.Done() )
-            {
-                SendPingCommands = true; // restore ping after download is completed
-            }
 
             // update data            
-            textBoxCommMsgOK.Text = comm433.MsgReceivedOK.ToString();
-            textBoxCommCRCErrors.Text = comm433.CrcErrors.ToString();
-            textBoxCommHeaderErrors.Text = comm433.HeaderFails.ToString();
+            textBoxCommMsgOK.Text = commMgr.serialPortComm.comm433MHz.MsgReceivedOK.ToString();
+            textBoxCommCRCErrors.Text = commMgr.serialPortComm.comm433MHz.CrcErrors.ToString();
+            textBoxCommHeaderErrors.Text = commMgr.serialPortComm.comm433MHz.HeaderFails.ToString();
+            textBoxCommTimeoutCnt.Text = commMgr.TimeoutCounter.ToString();
 
             // Loop/ADC
             textBoxTicks.Text = MainSystemData.LoopCounter.ToString();
@@ -133,18 +121,6 @@ namespace LoadCellV2
             if (MainSystemData.LaunchStatus2 != 0) buttonWpnArm2.Text = "Dearm";
             else buttonWpnArm2.Text = "Arm";
 
-            // Send PING command
-            if (SendPingCommands)
-            {
-                if (SendNewPing)
-                {
-                    byte[] buff = new byte[] { 1, 2, 3, 4 }; // dummy
-                    byte[] outputPacket = new byte[100];
-                    int size = comm433.GenerateTXPacket(0x10, buff, 4, outputPacket);
-                    serialPort1.Write(outputPacket, 0, size);
-                    SendNewPing = false;
-                }
-            }
         }
 
         private void ProcessMessage(byte type, byte[] data, byte len)
@@ -154,7 +130,6 @@ namespace LoadCellV2
             {
                 SCommEthData commData = (SCommEthData)Comm.FromBytes(data, new SCommEthData());
                 MainSystemData = commData;
-                SendNewPing = true;
             }
             if( type == 0x41)
             {
@@ -302,10 +277,7 @@ namespace LoadCellV2
 
             // Send
             byte[] toSend = Comm.GetBytes(launch);
-            byte[] outputPacket = new byte[100];
-            int size = comm433.GenerateTXPacket(0x30, toSend, (byte)toSend.Length, outputPacket);
-            serialPort1.Write(outputPacket, 0, size);
-            SendNewPing = true;
+            commMgr.QueueMsg(0x30, toSend);
         }
 
         private void buttonUpdateOffsets_Click(object sender, EventArgs e)
@@ -316,9 +288,6 @@ namespace LoadCellV2
 
         private void buttonBufferDownload_Click(object sender, EventArgs e)
         {
-            // kill ping!
-            SendPingCommands = false;
-
             // erase buffer
             downloadedDataList.Clear();
 
@@ -334,9 +303,7 @@ namespace LoadCellV2
             downloadRequest.Offset = offset;
             downloadRequest.Size = size;
             byte[] toSend = Comm.GetBytes(downloadRequest);
-            byte[] outputPacket = new byte[100];
-            int bytesToSend = comm433.GenerateTXPacket(0x40, toSend, (byte)toSend.Length, outputPacket);
-            serialPort1.Write(outputPacket, 0, bytesToSend);
+            commMgr.QueueMsg(0x40, toSend);
         }
 
         private void buttonBufferDownloaderAbort_Click(object sender, EventArgs e)
@@ -370,11 +337,6 @@ namespace LoadCellV2
             sw.Close();
 
             MessageBox.Show(string.Format("Immediate: {0}, Buffered: {1}", dataList.Count, downloadedDataList.Count), string.Format("Data Saved: {0}", extension));
-        }
-
-        private void buttonPing_Click(object sender, EventArgs e)
-        {
-            SendNewPing = true;
         }
     }
 }
