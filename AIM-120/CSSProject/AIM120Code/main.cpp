@@ -33,7 +33,6 @@
 #include "Drivers/EEPROMDrv.h"
 #include "Drivers/CANDrv.h"
 
-#include "Ctrl/Controller.h"
 #include "CommData.h"
 #include "Parameters.h"
 #include "LLConverter.h"
@@ -67,7 +66,6 @@ Comm433MHz comm433MHz;
 CANDrv canDrv;
 
 // System Objects
-ControllerModelClass ctrl;
 LLConverter llConv;
 
 // GPS Port (serialU2->Internal GPS, serialU5->External GPS on Ext Comm.)
@@ -105,6 +103,9 @@ float Mag[3];
 int HopeRSSI;
 int AssistNextChunkToSend = 0;
 float Pressure0 = 101300;
+float Acc2[3];
+float Gyro2[3];
+float Mag2[3];
 
 bool PingedSendData = false;
 
@@ -181,14 +182,13 @@ void main(void)
 	adcDrv.Init();
 	baroDrv.Init();
 	mpu9250Drv.Init();
-    //lsm90Drv.Init();
+    lsm90Drv.Init();
 	InitGPS(); // init GPS
 	//etherDrv.Init();
 	//hopeRF.Init();
 	imu.Init();
 	launch.Init();
 	canDrv.Init();
-	ctrl.initialize();
 
 
 
@@ -239,7 +239,16 @@ void main(void)
 		imu.Pitch -= AttOffPitch;
 
 		// IMU2
-		//lsm90Drv.Update();
+		lsm90Drv.Update();
+		Acc2[0] = lsm90Drv.Accel[0];
+        Acc2[1] = lsm90Drv.Accel[1];
+        Acc2[2] = lsm90Drv.Accel[2];
+        Gyro2[0] = lsm90Drv.Gyro[0];
+        Gyro2[1] = lsm90Drv.Gyro[1];
+        Gyro2[2] = lsm90Drv.Gyro[2];
+        Mag2[0] = lsm90Drv.Mag[0];
+        Mag2[1] = lsm90Drv.Mag[1];
+        Mag2[2] = lsm90Drv.Mag[2];
 
 		// GPS
 		rd = serialGPS.Read(CommBuffer, COMMBUFFERSIZE); // read data from GPS
@@ -271,65 +280,23 @@ void main(void)
         int dataReceived = serialU5.Read(CommBuffer, COMMBUFFERSIZE);
         comm433MHz.NewRXPacket(CommBuffer, dataReceived); // calls ProcessCommand callback!!!
 
-		// set inputs
-		ctrl.rtU.RPY[0] = imu.Roll;
-		ctrl.rtU.RPY[1] = imu.Pitch;
-		ctrl.rtU.RPY[2] = imu.Yaw;
-		ctrl.rtU.dRPY[0] = Gyro[0];
-		ctrl.rtU.dRPY[1] = Gyro[1];
-		ctrl.rtU.dRPY[2] = Gyro[2];
-		ctrl.rtU.PressureAbs = baroDrv.PressurePa;
-		ctrl.rtU.Pressure0 = Pressure0;
-		ctrl.rtU.Mode = sbusRecv.Channels[4]; // Mode selector
-		ctrl.rtU.Thr = sbusRecv.Channels[0];
-		ctrl.rtU.Aileron = sbusRecv.Channels[1];
-		ctrl.rtU.Elevator = sbusRecv.Channels[2];
-		ctrl.rtU.Rudder = sbusRecv.Channels[3];
-		ctrl.rtU.FlatVe[0] = gps.VelN / 1000.0f; // [m/s], Northing - X
-		ctrl.rtU.FlatVe[1] = gps.VelE / 1000.0f; // [m/s], Easting - Y
-		ctrl.rtU.FlatVe[2] = gps.VelD / 1000.0f; // [m/s], Down - Z, -> ignored, gps alt Z vel is not accurate! Probably?!
-		ctrl.rtU.FlatXe[0] = XN;
-		ctrl.rtU.FlatXe[1] = XE;
-
-#if 0
-		// fill waypoint buffer
-		ctrl.Ctrl_U.Waypoints[0] = TargetAlt;
-		ctrl.Ctrl_U.Waypoints[9] = TargetN;
-		ctrl.Ctrl_U.Waypoints[18] = TargetE;
-		for(int i=0; i!=MAXWAYPOINTS; i++)
-		{
-			ctrl.Ctrl_U.Waypoints[1+i] = WayAlt[i];
-			ctrl.Ctrl_U.Waypoints[10+i] = WayN[i];
-			ctrl.Ctrl_U.Waypoints[19+i] = WayE[i];
-		}
-		ctrl.Ctrl_U.WayCnt = WayCnt;
-		ctrl.Ctrl_U.ExecuteWaypoints = WayExecute;
-		ctrl.Ctrl_U.TrajZNEVParams[0] = TrajZNEVParams[0];
-		ctrl.Ctrl_U.TrajZNEVParams[1] = TrajZNEVParams[1];
-		ctrl.Ctrl_U.TrajZNEVParams[2] = TrajZNEVParams[2];
-		ctrl.Ctrl_U.TrajZNEVParams[3] = TrajZNEVParams[3];
-		WayExecute = 0; // auto reset flag
-#endif
-
-		/////////////////////////////////
-		// CTRL STEP
-		/////////////////////////////////
-		ctrl.step();
-
-
-		/////////////////////////////////
-		// OUTPUTS
-		/////////////////////////////////
-		pwmDrv.SetWidthUS(0, ctrl.rtY.PWM1);
-		pwmDrv.SetWidthUS(1, ctrl.rtY.PWM2);
-		pwmDrv.SetWidthUS(2, ctrl.rtY.PWM3);
-		pwmDrv.SetWidthUS(3, ctrl.rtY.PWM4);
 
 		// Launch Process
 		launch.Update();
 
 		// DBG LED
-		dbgLed.Set(ctrl.rtY.GreenLED);
+		if( gps.NumSV == 0 )
+		{
+		    // VERY SLOW
+		    if( (MainLoopCounter % 400 ) == 0 ) dbgLed.Toggle();
+		}
+		else if( gps.NumSV < 8)
+		{
+		    // SLOW
+		    if( (MainLoopCounter % 100 ) == 0 ) dbgLed.Toggle();
+		}
+		else if( (MainLoopCounter % 25 ) == 0 ) dbgLed.Toggle(); // FAST
+
 
 		// send periodic data (ethernet + hopeRF)
 		SendPeriodicDataEth();
@@ -355,7 +322,7 @@ void SendPeriodicDataEth(void)
         // Fill data
         SCommEthData data;
         data.LoopCounter = MainLoopCounter;
-        data.ActualMode = ctrl.rtY.ActualMode;
+        data.ActualMode = 0;
         data.Roll = imu.Roll;
         data.Pitch = imu.Pitch;
         data.Yaw = imu.Yaw;
@@ -371,16 +338,16 @@ void SendPeriodicDataEth(void)
 
         data.Pressure = baroDrv.PressurePa;
         data.Temperature = baroDrv.TemperatureC;
-        data.Altitude = ctrl.rtY.Altitude;
-        data.Vertspeed = ctrl.rtY.VertSpeed;
+        data.Altitude = 0;
+        data.Vertspeed = 0;
         data.FuelLevel = 0;
         data.BatteryVoltage = adcDrv.BATTVoltage();
         data.BatteryCurrentA = BatteryCurrentA;
         data.BatteryTotalCharge_mAh = BatteryTotalCharge_mAh;
-        data.MotorThrusts[0] = (unsigned char)(100*(ctrl.rtY.PWM1-1000)/1000);
-        data.MotorThrusts[1] = (unsigned char)(100*(ctrl.rtY.PWM2-1000)/1000);
-        data.MotorThrusts[2] = (unsigned char)(100*(ctrl.rtY.PWM3-1000)/1000);
-        data.MotorThrusts[3] = (unsigned char)(100*(ctrl.rtY.PWM4-1000)/1000);
+        data.MotorThrusts[0] = 0;
+        data.MotorThrusts[1] = 0;
+        data.MotorThrusts[2] = 0;
+        data.MotorThrusts[3] = 0;
 
         // gps
         data.GPSTime = gps.GPSTime;
@@ -422,15 +389,15 @@ void SendPeriodicDataEth(void)
         data.LaunchStatus2 = launch.WpnState[1];
 
         // Tuning data
-        data.TuningData[0] = sbusRecv.Channels[0]; // thr
-        data.TuningData[1] = sbusRecv.Channels[1]; // aileron
-        data.TuningData[2] = sbusRecv.Channels[2]; // elevation
-        data.TuningData[3] = sbusRecv.Channels[3]; // rudder
-        data.TuningData[4] = sbusRecv.Channels[4]; // mode
-        data.TuningData[5] = sbusRecv.Channels[5]; // ch5
-        data.TuningData[6] = sbusRecv.Channels[6]; // ch6
-        data.TuningData[7] = sbusRecv.SystemByte; // systemByte
-        data.TuningData[8] = 0;
+        data.TuningData[0] = Acc2[0];
+        data.TuningData[1] = Acc2[1];
+        data.TuningData[2] = Acc2[2];
+        data.TuningData[3] = Gyro2[0];
+        data.TuningData[4] = Gyro2[1];
+        data.TuningData[5] = Gyro2[2];
+        data.TuningData[6] = Mag2[0];
+        data.TuningData[7] = Mag2[1];
+        data.TuningData[8] = Mag2[2];
         data.TuningData[9] = 0;
 
         // send packet (type 0x20 - data)
@@ -452,19 +419,19 @@ void SendPeriodicDataEth(void)
 	{
 		SCommHopeRFDataA2Avion dataRF;
 		dataRF.LoopCounter = MainLoopCounter;
-		dataRF.ActualMode = ctrl.rtY.ActualMode;
+		dataRF.ActualMode = 0;
 		dataRF.Roll = imu.Roll;
 		dataRF.Pitch = imu.Pitch;
 		dataRF.Yaw = imu.Yaw;
 		dataRF.dRoll = Gyro[0];
 		dataRF.dPitch = Gyro[1];
 		dataRF.dYaw = Gyro[2];
-		dataRF.Altitude = ctrl.rtY.Altitude;
-		dataRF.Vertspeed = ctrl.rtY.VertSpeed;
-		dataRF.MotorThrusts[0] = (unsigned char)(100*(ctrl.rtY.PWM1-1000)/1000);
-		dataRF.MotorThrusts[1] = (unsigned char)(100*(ctrl.rtY.PWM2-1000)/1000);
-		dataRF.MotorThrusts[2] = (unsigned char)(100*(ctrl.rtY.PWM3-1000)/1000);
-		dataRF.MotorThrusts[3] = (unsigned char)(100*(ctrl.rtY.PWM4-1000)/1000);
+		dataRF.Altitude = 0;
+		dataRF.Vertspeed = 0;
+		dataRF.MotorThrusts[0] = 0;
+		dataRF.MotorThrusts[1] = 0;
+		dataRF.MotorThrusts[2] = 0;
+		dataRF.MotorThrusts[3] = 0;
 
 		dataRF.BatteryVoltage = adcDrv.BATTVoltage();
 		dataRF.BatteryCurrentA = BatteryCurrentA;
@@ -741,8 +708,8 @@ void InitGPS(void)
 	serialGPS.Write(CommBuffer, toSend);
 	toSend = gps.GenerateMsgCFGMsg(CommBuffer, 0x01, 0x35, 1); // NAV-SAT
 	serialGPS.Write(CommBuffer, toSend);
-	toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 6, 3); // airborne <1g, 2D/3D mode
-	//toSend = m_GPS.GenerateMsgNAV5Msg(CommBuffer, 7, 2); // airborne <2g, 3D mode only
+	//toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 6, 3); // airborne <1g, 2D/3D mode
+	toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 7, 2); // airborne <2g, 3D mode only
 	serialGPS.Write(CommBuffer, toSend);
 
 	// check response
@@ -766,14 +733,14 @@ void CopyParams2Str(SParameters& params)
 	params.MagOffZ = MagOffZ;
 	params.AttOffRoll = AttOffRoll;
 	params.AttOffPitch = AttOffPitch;
-	params.RollMax = RollMax;
-	params.RollKp = RollKp;
-	params.RollKi = RollKi;
-	params.RollKd = RollKd;
-	params.PitchMax = PitchMax;
-	params.PitchKp = PitchKp;
-	params.PitchKi = PitchKi;
-	params.PitchKd = PitchKd;
+	params.RollMax = 0;
+	params.RollKp = 0;
+	params.RollKi = 0;
+	params.RollKd = 0;
+	params.PitchMax = 0;
+	params.PitchKp = 0;
+	params.PitchKi = 0;
+	params.PitchKd = 0;
 }
 
 void CopyStr2Params(SParameters& params)
@@ -786,15 +753,6 @@ void CopyStr2Params(SParameters& params)
 	MagOffZ = params.MagOffZ;
 	AttOffRoll = params.AttOffRoll;
 	AttOffPitch = params.AttOffPitch;
-	RollMax = params.RollMax;
-	RollKp = params.RollKp;
-	RollKi = params.RollKi;
-	RollKd = params.RollKd;
-	PitchMax = params.PitchMax;
-	PitchKp = params.PitchKp;
-	PitchKi = params.PitchKi;
-	PitchKd = params.PitchKd;
-
 }
 
 
