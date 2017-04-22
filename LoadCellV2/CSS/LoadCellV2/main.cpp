@@ -68,7 +68,7 @@ float PerfCpuTimeMS;
 float PerfCpuTimeMSMAX;
 unsigned int ADCValue = 0;
 bool PingedSendData = false;
-
+float BattVoltage = 0;
 void SendLorCommData(void);
 
 // Systick
@@ -114,7 +114,7 @@ void main(void)
 		// ADC + Current Calc
 		adcDrv.Update();
 		ADCValue = adcDrv.GetValue(ADCBATTCURRENT);
-		//ADCValue = (1+sin(MainLoopCounter/1000.0f))*2000; // TEST
+		BattVoltage = adcDrv.BATTVoltage();
 
 		// read serial data
 		BYTE inputBuff[255];
@@ -167,6 +167,7 @@ void SendLorCommData(void)
         SCommEthData dataToSend;
         dataToSend.LoopCounter = MainLoopCounter;
         dataToSend.ADCValue = ADCValue;
+        dataToSend.BatteryVoltage = BattVoltage;
         dataToSend.DataBufferIndex = dataBuffer.GetBufferPosition();
         dataToSend.LaunchStatus1 = launch.WpnState[0];
         dataToSend.LaunchStatus2 = launch.WpnState[1];

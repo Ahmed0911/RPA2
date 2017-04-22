@@ -14,6 +14,7 @@ struct SCommEthData
 
 	unsigned int ADCValue;
 	unsigned int DataBufferIndex;
+	float BatteryVoltage; // [V]
 
 	// Launch
 	unsigned short LaunchStatus1;

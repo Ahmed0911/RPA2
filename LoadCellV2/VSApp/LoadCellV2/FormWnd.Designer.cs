@@ -80,6 +80,8 @@
             this.buttonSaveData = new System.Windows.Forms.Button();
             this.textBoxCommTimeoutCnt = new System.Windows.Forms.TextBox();
             this.label55 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.textBoxBattVoltage = new System.Windows.Forms.TextBox();
             this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -582,11 +584,33 @@
             this.label55.TabIndex = 66;
             this.label55.Text = "TimeoutCnt:";
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(1724, 94);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 20);
+            this.label16.TabIndex = 69;
+            this.label16.Text = "Batt [V]:";
+            // 
+            // textBoxBattVoltage
+            // 
+            this.textBoxBattVoltage.Location = new System.Drawing.Point(1796, 91);
+            this.textBoxBattVoltage.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxBattVoltage.Name = "textBoxBattVoltage";
+            this.textBoxBattVoltage.ReadOnly = true;
+            this.textBoxBattVoltage.Size = new System.Drawing.Size(84, 26);
+            this.textBoxBattVoltage.TabIndex = 68;
+            this.textBoxBattVoltage.Text = "0";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1920, 1031);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.textBoxBattVoltage);
             this.Controls.Add(this.textBoxCommTimeoutCnt);
             this.Controls.Add(this.label55);
             this.Controls.Add(this.buttonSaveData);
@@ -691,6 +715,8 @@
         private System.Windows.Forms.Button buttonSaveData;
         private System.Windows.Forms.TextBox textBoxCommTimeoutCnt;
         private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox textBoxBattVoltage;
     }
 }
 

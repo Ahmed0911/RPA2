@@ -95,10 +95,11 @@ namespace LoadCellV2
             textBoxCommMsgOK.Text = commMgr.serialPortComm.comm433MHz.MsgReceivedOK.ToString();
             textBoxCommCRCErrors.Text = commMgr.serialPortComm.comm433MHz.CrcErrors.ToString();
             textBoxCommHeaderErrors.Text = commMgr.serialPortComm.comm433MHz.HeaderFails.ToString();
-            textBoxCommTimeoutCnt.Text = commMgr.TimeoutCounter.ToString();
+            textBoxCommTimeoutCnt.Text = commMgr.TimeoutCounter.ToString();            
 
             // Loop/ADC
             textBoxTicks.Text = MainSystemData.LoopCounter.ToString();
+            textBoxBattVoltage.Text = MainSystemData.BATTVoltage.ToString("0.00 V");
             textBoxADCValue.Text = MainSystemData.ADCValue.ToString();
             textBoxBufferIndex.Text = MainSystemData.DataBufferIndex.ToString();
             float Newtons = (MainSystemData.ADCValue - LoadCellOffset) * LoadCellGain;
