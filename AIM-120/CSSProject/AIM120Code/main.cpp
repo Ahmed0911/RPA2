@@ -69,8 +69,8 @@ CANDrv canDrv;
 LLConverter llConv;
 
 // GPS Port (serialU2->Internal GPS, serialU5->External GPS on Ext Comm.)
-#define serialGPS serialU2
-//#define serialGPS serialU5
+//#define serialGPS serialU2
+#define serialGPS serialU5
 
 // Systick
 #define SysTickFrequency 400
@@ -175,9 +175,9 @@ void main(void)
 	pwmDrv.SetWidthUS(1, 1500); // Set midpoint PWMs
 	pwmDrv.SetWidthUS(2, 1500); // Set midpoint PWMs
 	pwmDrv.SetWidthUS(3, 1500);	// Set midpoint PWMs
-	serialU2.Init(UART2_BASE, 9600); // GPS
+	serialU2.Init(UART2_BASE, 57600); // GPS
 	serialU3.Init(UART3_BASE, 100000); // SBUS
-	serialU5.Init(UART5_BASE, 115200); // Ext. Comm
+	serialU5.Init(UART5_BASE, 9600); // Ext. Comm
 	sbusRecv.Init();
 	adcDrv.Init();
 	baroDrv.Init();
@@ -266,6 +266,9 @@ void main(void)
 		float XN = 0, XE = 0;
 		if( llConv.IsHomeSet()) llConv.ConvertLLToM(gps.Latitude*1e-7, gps.Longitude*1e-7, XN, XE);
 
+		// copy data to UART2 (for logging)
+		serialU2.Write(CommBuffer, rd);
+
 		// Set Pressure0 on 2 sec
 		if(MainLoopCounter == (SysTickFrequency * 2)) Pressure0 = baroDrv.PressurePa;
 
@@ -277,8 +280,8 @@ void main(void)
 		ProcessCANData(); // Receive CAN data
 
         // Read Lora Data
-        int dataReceived = serialU5.Read(CommBuffer, COMMBUFFERSIZE);
-        comm433MHz.NewRXPacket(CommBuffer, dataReceived); // calls ProcessCommand callback!!!
+        //int dataReceived = serialU5.Read(CommBuffer, COMMBUFFERSIZE);
+        //comm433MHz.NewRXPacket(CommBuffer, dataReceived); // calls ProcessCommand callback!!!
 
 
 		// Launch Process
@@ -458,7 +461,7 @@ void SendPeriodicDataEth(void)
 
 		// Send to LORA
         int bytesToSend = comm433MHz.GenerateTXPacket(0x20, (BYTE*)&dataRF, sizeof(dataRF), CommBuffer);
-        serialU5.Write(CommBuffer, bytesToSend);
+        //serialU5.Write(CommBuffer, bytesToSend);
         //serialU5.Write(CommBuffer, 59);
         //serialU5.Write(CommBuffer, 58);
 
@@ -552,7 +555,7 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
 				// Send ACK to LORA
 				BYTE ackCode = 0x60;
                 int bytesToSend = comm433MHz.GenerateTXPacket(0xA0, (BYTE*)&ackCode, 1, CommBuffer);
-                serialU5.Write(CommBuffer, bytesToSend);
+                //serialU5.Write(CommBuffer, bytesToSend);
 			}
 			break;
 		}
@@ -573,11 +576,11 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
 
 			// Send to LORA
             int bytesToSend = comm433MHz.GenerateTXPacket(0x62, (BYTE*)&params, sizeof(params), CommBuffer);
-            serialU5.Write(CommBuffer, bytesToSend);
+            //serialU5.Write(CommBuffer, bytesToSend);
             // Send ACK to LORA
             BYTE ackCode = 0x61;
             int bytesToSend2 = comm433MHz.GenerateTXPacket(0xA0, (BYTE*)&ackCode, 1, CommBuffer);
-            serialU5.Write(CommBuffer, bytesToSend2);
+            //serialU5.Write(CommBuffer, bytesToSend2);
 			break;
 		}
 
@@ -592,7 +595,7 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
 				// Send ACK to LORA
                 BYTE ackCode = 0x63;
                 int bytesToSend = comm433MHz.GenerateTXPacket(0xA0, (BYTE*)&ackCode, 1, CommBuffer);
-                serialU5.Write(CommBuffer, bytesToSend);
+                //serialU5.Write(CommBuffer, bytesToSend);
 			}
 			break;
 		}
@@ -683,7 +686,7 @@ void ProcessCommand(int cmd, unsigned char* data, int dataSize)
 			// Send ACK to LORA
             BYTE ackCode = 0x90;
             int bytesToSend = comm433MHz.GenerateTXPacket(0xA0, (BYTE*)&ackCode, 1, CommBuffer);
-            serialU5.Write(CommBuffer, bytesToSend);
+            //serialU5.Write(CommBuffer, bytesToSend);
 
 			break;
 		}
@@ -701,7 +704,7 @@ void InitGPS(void)
 	int toSend = gps.GenerateMsgCFGPrt(CommBuffer, 57600); // set to 57k
 	serialGPS.Write(CommBuffer, toSend);
 	SysCtlDelay(g_ui32SysClock/10); // 100ms wait, flush
-	serialGPS.Init(UART2_BASE, 57600); // open with 57k (115k doesn't work well??? small int FIFO, wrong INT prio?)'
+	serialGPS.Init(UART5_BASE, 57600); // open with 57k (115k doesn't work well??? small int FIFO, wrong INT prio?)'
 	toSend = gps.GenerateMsgCFGRate(CommBuffer, 100); // 100ms rate, 10Hz
 	serialGPS.Write(CommBuffer, toSend);
 	toSend = gps.GenerateMsgCFGMsg(CommBuffer, 0x01, 0x07, 1); // NAV-PVT
@@ -709,7 +712,8 @@ void InitGPS(void)
 	toSend = gps.GenerateMsgCFGMsg(CommBuffer, 0x01, 0x35, 1); // NAV-SAT
 	serialGPS.Write(CommBuffer, toSend);
 	//toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 6, 3); // airborne <1g, 2D/3D mode
-	toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 7, 2); // airborne <2g, 3D mode only
+	//toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 7, 2); // airborne <2g, 3D mode only
+	toSend = gps.GenerateMsgNAV5Msg(CommBuffer, 8, 2); // airborne <4g, 3D mode only
 	serialGPS.Write(CommBuffer, toSend);
 
 	// check response

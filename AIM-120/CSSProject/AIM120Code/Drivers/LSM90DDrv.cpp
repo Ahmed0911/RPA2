@@ -96,14 +96,14 @@ bool LSM90DDrv::Init()
 	if( ID != LSM9DS0_XM_ID) return false;
 
 	// GYRO
-	WriteReg(LSM9DS0_CTRL_REG1_G, LSM9DS0_GYRO_ODR_BW_190_70 ); // Set Gyro ODR
+	WriteReg(LSM9DS0_CTRL_REG1_G, LSM9DS0_GYRO_ODR_BW_380_100 ); // Set Gyro ODR
 	WriteReg(LSM9DS0_CTRL_REG4_G, LSM9DS0_GYRO_245DPS); // Set Gyro Range
 	//WriteReg(LSM9DS0_CTRL_REG3_G, LSM9DS0_GYRO_I2_DRDY); // Enable Gyro INT
 	// TODO: NE RADI INT, NESTO S PINOM NE VALJA!!!
 
 	// ACCEL+MAG
 	WriteReg(LSM9DS0_CTRL_REG1_XM, LSM9DS0_ACC_ODR_100, true ); // Set Accel ODR
-	WriteReg(LSM9DS0_CTRL_REG2_XM, LSM9DS0_ACCEL_2G, true ); // Set Accel Range
+	WriteReg(LSM9DS0_CTRL_REG2_XM, LSM9DS0_ACCEL_16G, true ); // Set Accel Range
 	WriteReg(LSM9DS0_CTRL_REG5_XM, LSM9DS0_MAG_ODR_100, true ); // Set Mag ODR + Enable Temp Sensor
 	WriteReg(LSM9DS0_CTRL_REG6_XM, LSM9DS0_MAG_2GAUSS, true ); // Set Mag Range
 	WriteReg(LSM9DS0_CTRL_REG7_XM, 0x00, true); // Continuos Mag
@@ -135,11 +135,14 @@ void LSM90DDrv::Update()
 
 	ReadBytes(LSM9DS0_OUT_X_L_A, data, 6, true);
 	value = (data[1] << 8) + data[0];
-	Accel[0] = (short)value * 0.061f * 0.00981f; // [g]
+	//Accel[0] = (short)value * 0.061f * 0.00981f * 8; // [g]
+    Accel[0] = (short)value * 0.732f * 0.00981f * 8; // [g], 16G
 	value = (data[3] << 8) + data[2];
-	Accel[1] = (short)value * 0.061f * 0.00981f; // [g]
+	//Accel[1] = (short)value * 0.061f * 0.00981f; // [g]
+	Accel[1] = (short)value * 0.732f * 0.00981f; // [g], 16G
 	value = (data[5] << 8) + data[4];
-	Accel[2] = (short)value * 0.061f * 0.00981f; // [g]
+	//Accel[2] = (short)value * 0.061f * 0.00981f; // [g]
+	Accel[2] = (short)value * 0.732f * 0.00981f; // [g], 16G
 
 	ReadBytes(LSM9DS0_OUT_X_L_M, data, 6, true);
 	value = (data[1] << 8) + data[0];

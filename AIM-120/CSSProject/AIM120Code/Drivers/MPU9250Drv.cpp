@@ -121,10 +121,10 @@ bool MPU9250Drv::Init()
 
 	// 10. Write application specific sensor configuration such as filter settings and sensor range settings.
 	//buf[0] = MPU9150_CONFIG_DLPF_CFG_460_250; // Gyro LPF -> Output at 8KHz!
-	buf[0] = MPU9150_CONFIG_DLPF_CFG_20_20; // Gyro LPF
+	buf[0] = MPU9150_CONFIG_DLPF_CFG_184_184; // Gyro LPF
 	buf[1] = MPU9150_GYRO_CONFIG_FS_SEL_500;
-	buf[2] = MPU9150_ACCEL_CONFIG_AFS_SEL_2G;
-	buf[3] = MPU9150_CONFIG_DLPF_CFG_5_5; // Accel LPF
+	buf[2] = MPU9150_ACCEL_CONFIG_AFS_SEL_16G;
+	buf[3] = MPU9150_CONFIG_DLPF_CFG_184_184; // Accel LPF
 	WriteBytes(MPU9150_O_CONFIG, buf, 4);
 
 	// 11. Configure the data ready interrupt pin output of the MPU9150.
@@ -150,11 +150,14 @@ void MPU9250Drv::Update()
 
 	unsigned int value = 0;
 	value = (data[0] << 8) + data[1];
-	Accel[0] = (short)value * 0.0005985482f; // [m/s^2]
+	//Accel[0] = (short)value * 0.0005985482f; // [m/s^2]
+	Accel[0] = (short)value * 0.0005985482f * 8; // [m/s^2], 16G
 	value = (data[2] << 8) + data[3];
-	Accel[1] = (short)value * 0.0005985482f; // [m/s^2]
+	//Accel[1] = (short)value * 0.0005985482f; // [m/s^2]
+	Accel[1] = (short)value * 0.0005985482f * 8; // [m/s^2], 16G
 	value = (data[4] << 8) + data[5];
-	Accel[2] = (short)value * 0.0005985482f; // [m/s^2]
+	//Accel[2] = (short)value * 0.0005985482f; // [m/s^2]
+	Accel[2] = (short)value * 0.0005985482f * 8; // [m/s^2], 16G
 
 	value = (data[8] << 8) + data[9];
 	Gyro[0] = (short)value * 0.0152671755724f; // [°/s]
